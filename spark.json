@@ -1,0 +1,7 @@
+{
+    "name": "papertrail",
+    "version": "0.0.1",
+    "author": "Barak Weiss <barakwei@gmail.com>",
+    "license": "MIT",
+    "description": "Sends logs to Papertrail"
+}
