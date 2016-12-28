@@ -1,17 +1,47 @@
 #include "papertrail/papertrail.h"
 
+#if Wiring_Cellular
+class ElectronResolver {
+    static int resolveCallback(int type, const char* buf, int len, IPAddress *pResult) {
+  	    if (type == TYPE_PLUS && pResult != NULL) {
+            int addr[4];
+            if (sscanf(buf, "\r\n+UDNSRN: \"%u.%u.%u.%u\"", &addr[0], &addr[1], &addr[2], &addr[3]) == 4) {
+                *pResult = IPAddress(addr[0], addr[1], addr[2], addr[3]);
+            }
+        }
+        return WAIT;
+  	}
+
+public:
+    static IPAddress resolve(const char *hostname) {
+      IPAddress result;
+      Cellular.command(resolveCallback, &result, "AT+UDNSRN=0,\"%s\"\r\n", hostname);
+      return result;
+    }
+};
+#endif
+
 const uint16_t PapertrailLogHandler::kLocalPort = 8888;
 
-PapertrailLogHandler::PapertrailLogHandler(String host, uint16_t port, String app, LogLevel level, const Filters &filters) : m_host(host), m_port(port), m_app(app), LogHandler(level, filters) {
+PapertrailLogHandler::PapertrailLogHandler(String host, uint16_t port, String app, LogLevel level, const Filters &filters) : LogHandler(level, filters), m_host(host), m_port(port), m_app(app)  {
     m_inited = false;
     LogManager::instance()->addHandler(this);
 }
 
+IPAddress PapertrailLogHandler::resolve(const char *host) {
+#if Wiring_WiFi
+    return WiFi.resolve(host);
+#elif Wiring_Cellular
+    return ElectronResolver::resolve(host);
+#else
+#error Unsupported plaform
+#endif
+}
+
 void PapertrailLogHandler::log(String message) {
-    IPAddress remoteIP = WiFi.resolve(m_host);
     String time = Time.format(Time.now(), TIME_FORMAT_ISO8601_FULL);
     String packet = String::format("<22>1 %s Particle %s - - - %s", time.c_str(), m_app.c_str(), message.c_str());
-    m_udp.sendPacket(packet, packet.length(), remoteIP, m_port);
+    m_udp.sendPacket(packet, packet.length(), m_address, m_port);
 }
 
 PapertrailLogHandler::~PapertrailLogHandler() {
@@ -39,10 +69,30 @@ const char* PapertrailLogHandler::extractFuncName(const char *s, size_t *size) {
     return s1;
 }
 
-void PapertrailLogHandler::logMessage(const char *msg, LogLevel level, const char *category, const LogAttributes &attr) {
+bool PapertrailLogHandler::lazyInit() {
     if (!m_inited) {
         uint8_t ret = m_udp.begin(kLocalPort);
         m_inited = ret != 0;
+
+        if (!m_inited) {
+            return false;
+        }
+    }
+
+    if (!m_address) {
+        m_address = resolve(m_host);
+
+        if (!m_address) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void PapertrailLogHandler::logMessage(const char *msg, LogLevel level, const char *category, const LogAttributes &attr) {
+    if (!lazyInit()) {
+      return;
     }
 
     String s;
