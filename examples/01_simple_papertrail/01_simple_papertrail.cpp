@@ -1,4 +1,4 @@
-#include "papertrail/papertrail.h"
+#include "papertrail.h"
 
 // TODO: Change the host and ports to match yours.
 // https://github.com/barakwei/ParticlePapertrail for more information.

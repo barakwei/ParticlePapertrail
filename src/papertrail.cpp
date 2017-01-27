@@ -1,4 +1,4 @@
-#include "papertrail/papertrail.h"
+#include "papertrail.h"
 
 #if Wiring_Cellular
 class ElectronResolver {
