@@ -26,7 +26,7 @@ For example a full log entry looks like this `Dec 23 00:09:09 200000000555555555
 
 * Particle Photon, Core and Electron were verified to work with this library.
 
-**Logging on the Electron consumes a lot of data. Be careful about how often you log.**
+**Logging on the Electron can consume a lot of data and may result in a higher bill. Be careful about how often you log.**
 
 ## Example:
 

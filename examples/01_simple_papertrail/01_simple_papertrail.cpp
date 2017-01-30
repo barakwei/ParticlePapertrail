@@ -8,7 +8,8 @@
 PapertrailLogHandler papertailHandler("logsX.papertrailapp.com", 12345, "PapertrailSimpleDemo");
 
 #if PLATFORM_ID == 10
-#warning "Logging on the Electron consumes a lot of data. Be careful about how often you log."
+#warning "Logging on the Electron can consume a lot of data and may result in a higher bill."
+#warning "Be careful about how often you call Log()"
 #endif
 
 int i = 0;
