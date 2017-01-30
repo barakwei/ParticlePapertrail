@@ -18,25 +18,27 @@ Yes! Papertrail provides a [free plan](https://papertrailapp.com/signup?plan=fre
 
 ## Logging format
 
-The library always reports the same system (`Particle`). And the application name is configurable. The log message itself follows the same pattern as the [SerialLogHandler](https://docs.particle.io/reference/firmware/photon/#logging) class.
+The library uses the Particle device ID for the Papertrail system. And the application name is configurable. The log message itself follows the same pattern as the [SerialLogHandler](https://docs.particle.io/reference/firmware/photon/#logging) class.
 
-For example a full log entry looks like this `Dec 23 00:09:09 Particle App:  [app] ERROR: An error occurred!`
+For example a full log entry looks like this `Dec 23 00:09:09 200000000555555555555555 App:  [app] ERROR: An error occurred!`
 
 ## Compatible Hardware:
 
-* Particle Photon is currently the only hardware tested to work with this library.
+* Particle Photon, Core and Electron were verified to work with this library.
+
+**Logging on the Electron consumes a lot of data. Be careful about how often you log.**
 
 ## Example:
 
 1. To use the example, first you need to sign up to Papertrail.
 2. Once signed up, go to Settings -> Log destinations. There you'll see your host and port. Should be something like `logs53.papertrailapp.com:12345`.
 3. In the example file, replace `logsX.papertrailapp.com` with your own host, and the port (`12345`) with your own.
-4. You can also replace the app name there (In this example, it was changed to "App").
+4. You can also replace the app name there (In this example, it was left as "PapertrailSimpleDemo").
 5. Flash the application.
-6. On your Papertrail dashboard, a new system will be created called `Particle`. Click on it.
+6. On your Papertrail dashboard, a new system will be created with your device ID. Click on it.
 7. Your log should look like this:
 
-![Simple log output](https://github.com/barakwei/ParticlePapertrail/blob/master/docs/simple_log.png)
+![Simple log output](docs/simple_log.png)
 
 ## Contributing
 
