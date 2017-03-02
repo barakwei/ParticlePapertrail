@@ -2,8 +2,8 @@
 
 #include "application.h"
 
-#if (SYSTEM_VERSION < 0x00060000)
-#error This library requires FW version 0.6.0 and above.
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v061)
+#error This library requires FW version 0.6.1 and above.
 #endif
 
 class PapertrailLogHandler : public LogHandler {
@@ -15,7 +15,7 @@ class PapertrailLogHandler : public LogHandler {
     IPAddress m_address;
 
 public:
-    explicit PapertrailLogHandler(String host, uint16_t port, String app, LogLevel level = LOG_LEVEL_INFO, const Filters &filters = {});
+    explicit PapertrailLogHandler(String host, uint16_t port, String app, LogLevel level = LOG_LEVEL_INFO, const LogCategoryFilters &filters = {});
     virtual ~PapertrailLogHandler();
 
 private:

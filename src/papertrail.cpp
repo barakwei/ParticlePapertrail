@@ -1,29 +1,8 @@
 #include "papertrail.h"
 
-#if Wiring_Cellular
-class ElectronResolver {
-    static int resolveCallback(int type, const char* buf, int len, IPAddress *pResult) {
-  	    if (type == TYPE_PLUS && pResult != NULL) {
-            int addr[4];
-            if (sscanf(buf, "\r\n+UDNSRN: \"%u.%u.%u.%u\"", &addr[0], &addr[1], &addr[2], &addr[3]) == 4) {
-                *pResult = IPAddress(addr[0], addr[1], addr[2], addr[3]);
-            }
-        }
-        return WAIT;
-  	}
-
-public:
-    static IPAddress resolve(const char *hostname) {
-      IPAddress result;
-      Cellular.command(resolveCallback, &result, "AT+UDNSRN=0,\"%s\"\r\n", hostname);
-      return result;
-    }
-};
-#endif
-
 const uint16_t PapertrailLogHandler::kLocalPort = 8888;
 
-PapertrailLogHandler::PapertrailLogHandler(String host, uint16_t port, String app, LogLevel level, const Filters &filters) : LogHandler(level, filters), m_host(host), m_port(port), m_app(app)  {
+PapertrailLogHandler::PapertrailLogHandler(String host, uint16_t port, String app, LogLevel level, const LogCategoryFilters &filters) : LogHandler(level, filters), m_host(host), m_port(port), m_app(app)  {
     m_inited = false;
     LogManager::instance()->addHandler(this);
 }
@@ -32,7 +11,7 @@ IPAddress PapertrailLogHandler::resolve(const char *host) {
 #if Wiring_WiFi
     return WiFi.resolve(host);
 #elif Wiring_Cellular
-    return ElectronResolver::resolve(host);
+    return Cellular.resolve(host);
 #else
 #error Unsupported plaform
 #endif
