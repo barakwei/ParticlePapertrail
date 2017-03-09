@@ -1,5 +1,6 @@
 #include "papertrail.h"
 
+///Local port to be used by the socket.
 const uint16_t PapertrailLogHandler::kLocalPort = 8888;
 
 PapertrailLogHandler::PapertrailLogHandler(String host, uint16_t port, String app, String system, LogLevel level,
@@ -34,27 +35,7 @@ PapertrailLogHandler::~PapertrailLogHandler() {
     LogManager::instance()->removeHandler(this);
 }
 
-const char* PapertrailLogHandler::PapertrailLogHandler::extractFileName(const char *s) {
-    const char *s1 = strrchr(s, '/');
-    if (s1) {
-        return s1 + 1;
-    }
-    return s;
-}
-
-const char* PapertrailLogHandler::extractFuncName(const char *s, size_t *size) {
-    const char *s1 = s;
-    for (; *s; ++s) {
-        if (*s == ' ') {
-            s1 = s + 1; // Skip return type
-        } else if (*s == '(') {
-            break; // Skip argument types
-        }
-    }
-    *size = s - s1;
-    return s1;
-}
-
+/// Initialize socket and resolve address if needed.
 bool PapertrailLogHandler::lazyInit() {
     if (!m_inited) {
         uint8_t ret = m_udp.begin(kLocalPort);
@@ -74,6 +55,29 @@ bool PapertrailLogHandler::lazyInit() {
     }
 
     return true;
+}
+
+// The floowing methods are taken from Particle FW, specifically spark::StreamLogHandler.
+// See https://github.com/spark/firmware/blob/develop/wiring/src/spark_wiring_logging.cpp
+const char* PapertrailLogHandler::PapertrailLogHandler::extractFileName(const char *s) {
+    const char *s1 = strrchr(s, '/');
+    if (s1) {
+        return s1 + 1;
+    }
+    return s;
+}
+
+const char* PapertrailLogHandler::extractFuncName(const char *s, size_t *size) {
+    const char *s1 = s;
+    for (; *s; ++s) {
+        if (*s == ' ') {
+            s1 = s + 1; // Skip return type
+        } else if (*s == '(') {
+            break; // Skip argument types
+        }
+    }
+    *size = s - s1;
+    return s1;
 }
 
 void PapertrailLogHandler::logMessage(const char *msg, LogLevel level, const char *category, const LogAttributes &attr) {
