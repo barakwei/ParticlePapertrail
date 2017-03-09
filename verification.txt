@@ -1,0 +1,4 @@
+All the information needed to verify this library is in the README file.
+You need to open a papertrail account, then cofigure the logger as in the example.
+Last thing to do is write some line that log like Log.Error("This is an error message")
+then go to papertrail and see the log there.
