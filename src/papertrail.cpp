@@ -2,7 +2,9 @@
 
 const uint16_t PapertrailLogHandler::kLocalPort = 8888;
 
-PapertrailLogHandler::PapertrailLogHandler(String host, uint16_t port, String app, LogLevel level, const LogCategoryFilters &filters) : LogHandler(level, filters), m_host(host), m_port(port), m_app(app)  {
+PapertrailLogHandler::PapertrailLogHandler(String host, uint16_t port, String app, String system, LogLevel level,
+    const LogCategoryFilters &filters) : LogHandler(level, filters), m_host(host), m_port(port), m_app(app),
+                                         m_system(system)  {
     m_inited = false;
     LogManager::instance()->addHandler(this);
 }
@@ -17,9 +19,11 @@ IPAddress PapertrailLogHandler::resolve(const char *host) {
 #endif
 }
 
+/// Send the log message to Papertrail.
 void PapertrailLogHandler::log(String message) {
     String time = Time.format(Time.now(), TIME_FORMAT_ISO8601_FULL);
-    String packet = String::format("<22>1 %s %s %s - - - %s", time.c_str(), System.deviceID().c_str(), m_app.c_str(), message.c_str());
+    String packet = String::format("<22>1 %s %s %s - - - %s", time.c_str(), m_system.c_str(), m_app.c_str(),
+                                   message.c_str());
     int ret = m_udp.sendPacket(packet, packet.length(), m_address, m_port);
     if (ret < 1) {
         m_inited = false;

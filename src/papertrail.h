@@ -10,12 +10,24 @@ class PapertrailLogHandler : public LogHandler {
     String m_host;
     uint16_t m_port;
     String m_app;
+    String m_system;
     UDP m_udp;
     bool m_inited;
     IPAddress m_address;
 
 public:
-    explicit PapertrailLogHandler(String host, uint16_t port, String app, LogLevel level = LOG_LEVEL_INFO, const LogCategoryFilters &filters = {});
+    /// Initialize the log handler.
+    /// \param host Hostname of the Papertrail log server.
+    /// \param port Port of the Papertrail log server.
+    /// \param app The name of the application in every log entry.
+    /// \param system The name of the system in every log entry. Defaults to the deviceID.
+    /// \para level Default log level.
+    /// \param filters Category filters.
+    ///
+    /// Each log entry uses RFC 5424 with the following format:
+    /// "<22>1 %ISO8601_TIME% %system% %app% - - - [%category%] %log_level%: %text".
+    explicit PapertrailLogHandler(String host, uint16_t port, String app, String system = System.deviceID(),
+                                  LogLevel level = LOG_LEVEL_INFO, const LogCategoryFilters &filters = {});
     virtual ~PapertrailLogHandler();
 
 private:
@@ -28,6 +40,5 @@ private:
     static const uint16_t kLocalPort;
 
 protected:
-    virtual void logMessage(const char *msg, LogLevel level,
-        const char *category, const LogAttributes &attr) override;
+    virtual void logMessage(const char *msg, LogLevel level, const char *category, const LogAttributes &attr) override;
 };
