@@ -19,7 +19,7 @@ IPAddress PapertrailLogHandler::resolve(const char *host) {
 
 void PapertrailLogHandler::log(String message) {
     String time = Time.format(Time.now(), TIME_FORMAT_ISO8601_FULL);
-    String packet = String::format("<22>1 %s Particle %s - - - %s", time.c_str(), m_app.c_str(), message.c_str());
+    String packet = String::format("<22>1 %s %s %s - - - %s", time.c_str(), System.deviceID().c_str(), m_app.c_str(), message.c_str());
     int ret = m_udp.sendPacket(packet, packet.length(), m_address, m_port);
     if (ret < 1) {
         m_inited = false;
