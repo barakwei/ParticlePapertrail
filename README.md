@@ -18,9 +18,14 @@ Yes! Papertrail provides a [free plan](https://papertrailapp.com/signup?plan=fre
 
 ## Logging format
 
-The library uses the Particle device ID for the Papertrail system. And the application name is configurable. The log message itself follows the same pattern as the [SerialLogHandler](https://docs.particle.io/reference/firmware/photon/#logging) class.
-
-For example a full log entry looks like this `Dec 23 00:09:09 200000000555555555555555 App:  [app] ERROR: An error occurred!`
+The library uses the Particle device ID for the Papertrail system by default. And the application name is configurable. The log message itself follows the same pattern as the [SerialLogHandler](https://docs.particle.io/reference/firmware/photon/#logging) class:
+```
+%ISO8601_TIME% %system% %app% [%category%] %log_level%: %text"
+```
+For example a full log entry looks like this:
+```
+Dec 23 00:09:09 200000000555555555555555 App:  [app] ERROR: An error occurred!
+```
 
 ## Compatible Hardware:
 
@@ -34,9 +39,10 @@ For example a full log entry looks like this `Dec 23 00:09:09 200000000555555555
 2. Once signed up, go to Settings -> Log destinations. There you'll see your host and port. Should be something like `logs53.papertrailapp.com:12345`.
 3. In the example file, replace `logsX.papertrailapp.com` with your own host, and the port (`12345`) with your own.
 4. You can also replace the app name there (In this example, it was left as "PapertrailSimpleDemo").
-5. Flash the application.
-6. On your Papertrail dashboard, a new system will be created with your device ID. Click on it.
-7. Your log should look like this:
+5. The library uses the [deviceID](https://docs.particle.io/reference/firmware/photon/#deviceid-) as the deafult system name, you can change this as well in the constructor.
+6. Flash the application.
+7. On your Papertrail dashboard, a new system will be created with your device ID. Click on it.
+8. Your log should look like this:
 
 ![Simple log output](docs/simple_log.png)
 
